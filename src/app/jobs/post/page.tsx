@@ -1,10 +1,24 @@
 "use client";
 
 const PostJobsPage = () => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      title: formData.get("title"),
+      company: formData.get("company"),
+      location: formData.get("location"),
+      type: formData.get("type"),
+      description: formData.get("description"),
+      salary: formData.get("salary"),
+    };
+  };
+
   return (
     <div className="max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Post a Job</h1>
-      <form className="space-y-6">
+      <form className="space-y-6" onSubmit={handleSubmit}>
         <div>
           <label
             htmlFor="title"
