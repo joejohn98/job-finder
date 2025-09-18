@@ -1,10 +1,12 @@
 "use client";
 
-import { signIn } from "@/lib/actions/auth-actions";
-import LoadingButton from "@/components/LoadingButton";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Link from "next/link";
+
+import { signIn } from "@/lib/actions/auth-actions";
+import { signInSocial } from "@/lib/actions/auth-actions";
+import LoadingButton from "@/components/LoadingButton";
 
 const SigninClientPage = () => {
   const router = useRouter();
@@ -36,6 +38,21 @@ const SigninClientPage = () => {
       );
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleSocialAuth = async (provider: "google" | "github") => {
+    setIsLoading(true);
+    setError("");
+
+    try {
+      await signInSocial(provider);
+    } catch (error) {
+      setError(
+        `Error authenticating with ${provider}: ${
+          error instanceof Error ? error.message : "Unknown Error"
+        }`
+      );
     }
   };
 
@@ -142,6 +159,7 @@ const SigninClientPage = () => {
           <button
             className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={isLoading}
+            onClick={() => handleSocialAuth("google")}
           >
             <svg
               className="w-6 h-6"
@@ -171,6 +189,7 @@ const SigninClientPage = () => {
           <button
             className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={isLoading}
+            onClick={() => handleSocialAuth("github")}
           >
             <svg
               className="w-6 h-6"

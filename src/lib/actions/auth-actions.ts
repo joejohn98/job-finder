@@ -1,6 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { auth } from "../auth";
 
 export async function signIn(email: string, password: string) {
@@ -10,7 +11,6 @@ export async function signIn(email: string, password: string) {
       password,
     },
   });
-  console.log("successfully signed in");
   return result;
 }
 
@@ -23,6 +23,17 @@ export async function signUp(email: string, password: string, name: string) {
     },
   });
   return result;
+}
+
+export async function signInSocial(provider: "google" | "github") {
+  const { url } = await auth.api.signInSocial({
+    body: {
+      provider,
+    },
+  });
+  if (url) {
+    redirect(url);
+  }
 }
 
 export async function signOut() {
