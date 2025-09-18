@@ -28,3 +28,19 @@ export async function POST(request: Request) {
     );
   }
 }
+
+export async function GET(request: Request) {
+  try {
+    const jobs = await prisma.job.findMany({
+      orderBy: {
+        postedAt: "desc",
+      },
+    });
+    return NextResponse.json(jobs);
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Internal server Error" },
+      { status: 500 }
+    );
+  }
+}
