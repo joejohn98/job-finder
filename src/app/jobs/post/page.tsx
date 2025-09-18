@@ -1,5 +1,7 @@
 "use client";
 
+import {redirect} from "next/navigation"
+
 const PostJobsPage = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -13,6 +15,19 @@ const PostJobsPage = () => {
       description: formData.get("description"),
       salary: formData.get("salary"),
     };
+
+    try {
+        await fetch("/api/jobs", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+    } catch (error) {
+        console.log(error)
+    }
+    redirect("/jobs")
   };
 
   return (

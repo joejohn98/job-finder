@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+
 import SignOutButton from "./SignoutButton";
 
 const Navbar = async () => {
