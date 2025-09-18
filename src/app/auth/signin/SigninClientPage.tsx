@@ -1,14 +1,42 @@
 "use client";
 
+import { signIn } from "@/lib/actions/auth-actions";
+import LoadingButton from "@/components/LoadingButton";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const SigninClientPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const router = useRouter();
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await signIn(email, password);
+      if (result.user) {
+        router.push("/dashboard");
+        router.refresh();
+      }
+      if (!result.user) {
+        setError("Invalid email or password");
+      }
+      setEmail("");
+      setPassword("");
+    } catch (error) {
+      setError(
+        `Authentication Error: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -23,7 +51,12 @@ const SigninClientPage = () => {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+        <form onSubmit={handleSubmit} className="mt-8 space-y-6 text-gray-800">
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
           <div className="space-y-4">
             <div>
               <label
@@ -87,12 +120,9 @@ const SigninClientPage = () => {
             </div>
           </div>
 
-          <button
-            type="submit"
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
-          >
+          <LoadingButton pending={isLoading} className="w-full">
             Sign in
-          </button>
+          </LoadingButton>
         </form>
 
         <div className="mt-6">
@@ -109,7 +139,10 @@ const SigninClientPage = () => {
         </div>
 
         <div className="mt-6 space-y-3">
-          <button className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200">
+          <button
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isLoading}
+          >
             <svg
               className="w-6 h-6"
               viewBox="0 0 24 24"
@@ -135,7 +168,10 @@ const SigninClientPage = () => {
             </svg>
             <span className="text-base font-medium">Sign in with Google</span>
           </button>
-          <button className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200">
+          <button
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isLoading}
+          >
             <svg
               className="w-6 h-6"
               viewBox="0 0 24 24"
@@ -154,6 +190,16 @@ const SigninClientPage = () => {
         </div>
 
         <div className="mt-6 text-center text-sm text-gray-500">
+          Don't have an account?{" "}
+          <Link
+            href="/auth/signup"
+            className="text-indigo-600 hover:text-indigo-500"
+          >
+            Sign up here
+          </Link>
+        </div>
+
+        <div className="mt-4 text-center text-sm text-gray-500">
           By signing in, you agree to our{" "}
           <a href="#" className="text-indigo-600 hover:text-indigo-500">
             Terms of Service
