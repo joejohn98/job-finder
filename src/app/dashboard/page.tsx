@@ -1,14 +1,12 @@
-import { auth } from "@/lib/auth";
-import prisma from "@/lib/prisma";
 import { formatDistanceToNow } from "date-fns";
-import { headers } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import prisma from "@/lib/prisma";
+import { getSession } from "@/lib/session";
+
 const DashboardPage = async () => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getSession();
 
   if (!session) {
     redirect("/signin");

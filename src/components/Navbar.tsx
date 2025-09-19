@@ -1,15 +1,12 @@
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
 import SignOutButton from "./SignoutButton";
+import { getSession } from "@/lib/session";
 
 const Navbar = async () => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getSession();
   return (
     <nav className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

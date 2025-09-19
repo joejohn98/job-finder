@@ -1,12 +1,9 @@
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { getSession } from "@/lib/session";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
 export async function POST(request: Request) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getSession();
 
   if (!session?.user || !session.user.id) {
     return NextResponse.redirect(new URL("/auth/signin", request.url));

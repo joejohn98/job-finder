@@ -1,16 +1,14 @@
-import { auth } from "@/lib/auth";
-import prisma from "@/lib/prisma";
-import { headers } from "next/headers";
 import { NextResponse } from "next/server";
+
+import { getSession } from "@/lib/session";
+import prisma from "@/lib/prisma";
 
 // GET method to check if user has already applied
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ jobId: string }> }
 ) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getSession();
 
   if (!session?.user || !session.user.id) {
     return NextResponse.json({ hasApplied: false });
@@ -43,9 +41,7 @@ export async function POST(
   request: Request,
   { params }: { params: Promise<{ jobId: string }> }
 ) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getSession();
 
   if (!session?.user || !session.user.id) {
     return NextResponse.redirect(new URL("/signin", request.url));

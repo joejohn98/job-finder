@@ -1,17 +1,15 @@
-import prisma from "@/lib/prisma";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+
+import prisma from "@/lib/prisma";
 import ApplyButton from "./ApplyButton";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { getSession } from "@/lib/session";
 
 const Jobpage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const jobId = (await params).id;
 
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getSession();
 
   const job = await prisma.job.findUnique({
     where: {
