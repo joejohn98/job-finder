@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { getSession } from "@/lib/session";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
@@ -18,7 +19,7 @@ export async function POST(request: Request) {
       },
     });
     return NextResponse.json(job);
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { error: "Internal server Error" },
       { status: 500 }
@@ -26,7 +27,7 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET(request: Request) {
+export async function GET(_request: Request) {
   try {
     const jobs = await prisma.job.findMany({
       orderBy: {
@@ -34,7 +35,7 @@ export async function GET(request: Request) {
       },
     });
     return NextResponse.json(jobs);
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { error: "Internal server Error" },
       { status: 500 }
