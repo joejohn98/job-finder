@@ -119,9 +119,9 @@ export default function ApplyButton({ jobId, session }: ApplyButtonProps) {
         </p>
         <Link
           href="/dashboard"
-          className=" hover:bg-indigo-700 text-indigo-600 font-medium"
+          className="text-indigo-600 hover:text-indigo-700 font-medium"
         >
-          View your Applications
+          View your applications →
         </Link>
       </div>
     );
@@ -130,14 +130,14 @@ export default function ApplyButton({ jobId, session }: ApplyButtonProps) {
   if (applicationStatus === "already_applied") {
     return (
       <div className="text-center">
-        <p className="text-blue-600 font-medium mb-4">
+        <p className="text-indigo-600 font-medium mb-4">
           You have already applied for this position
         </p>
         <Link
           href="/dashboard"
-          className="hover:bg-indigo-700 text-indigo-600 font-medium"
+          className="hover:text-indigo-700 text-indigo-600 font-medium"
         >
-          View your Applications
+          View your Applications →
         </Link>
       </div>
     );
