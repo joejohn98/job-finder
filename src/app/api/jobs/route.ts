@@ -6,7 +6,7 @@ export async function POST(request: Request) {
   const session = await getSession();
 
   if (!session?.user || !session.user.id) {
-    return NextResponse.redirect(new URL("/auth/signin", request.url));
+    return NextResponse.redirect(new URL("/signin", request.url));
   }
 
   try {

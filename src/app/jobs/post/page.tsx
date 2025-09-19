@@ -1,12 +1,14 @@
 "use client";
 
-import { redirect } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+
 import LoadingButton from "@/components/LoadingButton";
 
 const PostJobsPage = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -35,7 +37,7 @@ const PostJobsPage = () => {
         toast.success("Job posted successfully!", {
           description: "Your job posting is now live",
         });
-        redirect("/jobs");
+        router.push("/jobs");
       } else {
         toast.error("Failed to post job", {
           description: "Please try again",
