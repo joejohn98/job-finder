@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import LoadingButton from "@/components/LoadingButton";
 import { Session } from "@/lib/auth";
 
@@ -15,10 +15,39 @@ export default function ApplyButton({ jobId, session }: ApplyButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>("");
   const [applicationStatus, setApplicationStatus] = useState<
-    "idle" | "success" | "error"
-  >("idle");
+    "idle" | "success" | "error" | "already_applied" | "checking"
+  >("checking");
 
   const router = useRouter();
+
+  // Check if user has already applied when component mounts
+  useEffect(() => {
+    const checkApplicationStatus = async () => {
+      if (!session?.user) {
+        setApplicationStatus("idle");
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/jobs/${jobId}/apply`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.hasApplied) {
+            setApplicationStatus("already_applied");
+          } else {
+            setApplicationStatus("idle");
+          }
+        } else {
+          setApplicationStatus("idle");
+        }
+      } catch (error) {
+        console.error("Error checking application status:", error);
+        setApplicationStatus("idle");
+      }
+    };
+
+    checkApplicationStatus();
+  }, [jobId, session]);
 
   const handleApply = async () => {
     setIsLoading(true);
@@ -35,7 +64,22 @@ export default function ApplyButton({ jobId, session }: ApplyButtonProps) {
       const response = await fetch(`/api/jobs/${jobId}/apply`, {
         method: "POST",
       });
-      setApplicationStatus("success");
+
+      if (response.ok) {
+        setApplicationStatus("success");
+      } else {
+        const errorData = await response.json();
+
+        if (
+          response.status === 400 &&
+          errorData.error === "You have already applied for this job"
+        ) {
+          setApplicationStatus("already_applied");
+        } else {
+          setError(errorData.error || "Failed to apply for the job.");
+          setApplicationStatus("error");
+        }
+      }
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
@@ -47,6 +91,14 @@ export default function ApplyButton({ jobId, session }: ApplyButtonProps) {
       setIsLoading(false);
     }
   };
+
+  if (applicationStatus === "checking") {
+    return (
+      <div className="w-full bg-gray-200 text-gray-600 px-6 py-3 rounded-md text-center">
+        Checking application status...
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -68,6 +120,22 @@ export default function ApplyButton({ jobId, session }: ApplyButtonProps) {
         <Link
           href="/dashboard"
           className=" hover:bg-indigo-700 text-indigo-600 font-medium"
+        >
+          View your Applications
+        </Link>
+      </div>
+    );
+  }
+
+  if (applicationStatus === "already_applied") {
+    return (
+      <div className="text-center">
+        <p className="text-blue-600 font-medium mb-4">
+          You have already applied for this position
+        </p>
+        <Link
+          href="/dashboard"
+          className="hover:bg-indigo-700 text-indigo-600 font-medium"
         >
           View your Applications
         </Link>

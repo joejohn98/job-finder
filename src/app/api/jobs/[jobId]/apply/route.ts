@@ -3,6 +3,42 @@ import prisma from "@/lib/prisma";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
+// GET method to check if user has already applied
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ jobId: string }> }
+) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user || !session.user.id) {
+    return NextResponse.json({ hasApplied: false });
+  }
+
+  try {
+    const { jobId } = await params;
+
+    const existingApplication = await prisma.application.findFirst({
+      where: {
+        jobId: jobId,
+        userId: session.user.id,
+      },
+    });
+
+    return NextResponse.json({
+      hasApplied: !!existingApplication,
+      application: existingApplication,
+    });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ jobId: string }> }
