@@ -211,7 +211,7 @@ const SigninClientPage = () => {
         <div className="mt-6 text-center text-sm text-gray-500">
           Don't have an account?{" "}
           <Link
-            href="/auth/signup"
+            href="/signup"
             className="text-indigo-600 hover:text-indigo-500"
           >
             Sign up here

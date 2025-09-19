@@ -231,7 +231,7 @@ const SignupClientPage = () => {
         <div className="mt-6 text-center text-sm text-gray-500">
           Already have an account?{" "}
           <Link
-            href="/auth/signin"
+            href="/signin"
             className="text-indigo-600 hover:text-indigo-500"
           >
             Sign in here

@@ -2,9 +2,16 @@ import prisma from "@/lib/prisma";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import ApplyButton from "./ApplyButton";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 const Jobpage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const jobId = (await params).id;
+
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
   const job = await prisma.job.findUnique({
     where: {
@@ -58,6 +65,10 @@ const Jobpage = async ({ params }: { params: Promise<{ id: string }> }) => {
           <div className="text-gray-600 whitespace-pre-wrap">
             {job.description}
           </div>
+        </div>
+
+        <div className="mt-8 pt-6 border-t border-gray-200">
+          <ApplyButton jobId={job.id} session={session} />
         </div>
       </div>
     </div>
