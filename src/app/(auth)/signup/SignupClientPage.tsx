@@ -5,6 +5,7 @@ import LoadingButton from "@/components/LoadingButton";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const SignupClientPage = () => {
   const [formData, setFormData] = useState({
@@ -22,19 +23,35 @@ const SignupClientPage = () => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
+
     try {
       const { email, password, confirmPassword, fullName } = formData;
+
       if (password !== confirmPassword) {
-        throw new Error("Passwords do not match");
+        const errorMessage = "Passwords do not match";
+        setError(errorMessage);
+        toast.error("Validation Error", {
+          description: errorMessage,
+        });
+        return;
       }
+
       const result = await signUp(email, password, fullName);
+
       if (result.user) {
+        toast.success("Account created successfully!", {
+          description: `Welcome to Job Finder, ${fullName}!`,
+        });
         router.push("/dashboard");
         router.refresh();
+      } else {
+        const errorMessage = "Failed to create account. Please try again.";
+        setError(errorMessage);
+        toast.error("Sign up failed", {
+          description: errorMessage,
+        });
       }
-      if (!result.user) {
-        setError("Failed to create account. Please try again.");
-      }
+
       setFormData({
         email: "",
         password: "",
@@ -42,11 +59,13 @@ const SignupClientPage = () => {
         fullName: "",
       });
     } catch (error) {
-      setError(
-        `Authentication Error: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`
-      );
+      const errorMessage = `Authentication Error: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`;
+      setError(errorMessage);
+      toast.error("Sign up failed", {
+        description: errorMessage,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -164,6 +183,7 @@ const SignupClientPage = () => {
           </LoadingButton>
         </form>
 
+        {/* Social Authentication Section - OAuth providers for quick sign-in */}
         <div className="mt-6">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">

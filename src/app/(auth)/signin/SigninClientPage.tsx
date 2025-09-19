@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 import { signIn } from "@/lib/actions/auth-actions";
 import { signInSocial } from "@/lib/actions/auth-actions";
@@ -19,23 +20,34 @@ const SigninClientPage = () => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
+
     try {
       const result = await signIn(email, password);
+
       if (result.user) {
+        toast.success("Successfully signed in!", {
+          description: `Welcome back, ${result.user.name || email}!`,
+        });
         router.push("/dashboard");
         router.refresh();
+      } else {
+        const errorMessage = "Invalid email or password";
+        setError(errorMessage);
+        toast.error("Sign in failed", {
+          description: errorMessage,
+        });
       }
-      if (!result.user) {
-        setError("Invalid email or password");
-      }
+
       setEmail("");
       setPassword("");
     } catch (error) {
-      setError(
-        `Authentication Error: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`
-      );
+      const errorMessage = `Authentication Error: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`;
+      setError(errorMessage);
+      toast.error("Sign in failed", {
+        description: errorMessage,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -46,13 +58,19 @@ const SigninClientPage = () => {
     setError("");
 
     try {
+      toast.loading(`Redirecting to ${provider}...`, {
+        description: "Please wait while we redirect you to sign in",
+      });
       await signInSocial(provider);
     } catch (error) {
-      setError(
-        `Error authenticating with ${provider}: ${
-          error instanceof Error ? error.message : "Unknown Error"
-        }`
-      );
+      const errorMessage = `Error authenticating with ${provider}: ${
+        error instanceof Error ? error.message : "Unknown Error"
+      }`;
+      setError(errorMessage);
+      toast.error(`${provider} sign in failed`, {
+        description: errorMessage,
+      });
+      setIsLoading(false);
     }
   };
 
@@ -155,6 +173,8 @@ const SigninClientPage = () => {
           </div>
         </div>
 
+
+     {/* Social Authentication Section - OAuth providers for quick sign-in */}
         <div className="mt-6 space-y-3">
           <button
             className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"

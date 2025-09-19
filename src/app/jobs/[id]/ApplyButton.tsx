@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import LoadingButton from "@/components/LoadingButton";
 import { Session } from "@/lib/auth";
+import { toast } from "sonner";
 
 interface ApplyButtonProps {
   jobId: string;
@@ -67,6 +68,9 @@ export default function ApplyButton({ jobId, session }: ApplyButtonProps) {
 
       if (response.ok) {
         setApplicationStatus("success");
+        toast.success("Application submitted!", {
+          description: "Your application has been successfully submitted",
+        });
       } else {
         const errorData = await response.json();
 
@@ -76,17 +80,23 @@ export default function ApplyButton({ jobId, session }: ApplyButtonProps) {
         ) {
           setApplicationStatus("already_applied");
         } else {
-          setError(errorData.error || "Failed to apply for the job.");
+          const errorMessage =
+            errorData.error || "Failed to apply for the job.";
+          setError(errorMessage);
           setApplicationStatus("error");
+          toast.error("Application failed", {
+            description: errorMessage,
+          });
         }
       }
     } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError("Failed to apply for the job.");
-      }
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to apply for the job.";
+      setError(errorMessage);
       setApplicationStatus("error");
+      toast.error("Application failed", {
+        description: errorMessage,
+      });
     } finally {
       setIsLoading(false);
     }

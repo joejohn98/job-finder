@@ -1,10 +1,16 @@
 "use client";
 
-import {redirect} from "next/navigation"
+import { redirect } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
+import LoadingButton from "@/components/LoadingButton";
 
 const PostJobsPage = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsLoading(true);
 
     const formData = new FormData(e.currentTarget);
     const data = {
@@ -17,17 +23,32 @@ const PostJobsPage = () => {
     };
 
     try {
-        await fetch("/api/jobs", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
-        })
+      const response = await fetch("/api/jobs", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        toast.success("Job posted successfully!", {
+          description: "Your job posting is now live",
+        });
+        redirect("/jobs");
+      } else {
+        toast.error("Failed to post job", {
+          description: "Please try again",
+        });
+      }
     } catch (error) {
-        console.log(error)
+      console.error(error);
+      toast.error("Failed to post job", {
+        description: "Please check your connection and try again",
+      });
+    } finally {
+      setIsLoading(false);
     }
-    redirect("/jobs")
   };
 
   return (
@@ -135,12 +156,9 @@ const PostJobsPage = () => {
           />
         </div>
 
-        <button
-          type="submit"
-          className="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
+        <LoadingButton pending={isLoading} className="w-full">
           Post Job
-        </button>
+        </LoadingButton>
       </form>
     </div>
   );
