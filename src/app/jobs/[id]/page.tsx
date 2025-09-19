@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import ApplyButton from "./ApplyButton";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
@@ -24,6 +24,10 @@ const Jobpage = async ({ params }: { params: Promise<{ id: string }> }) => {
 
   if (!job) {
     notFound();
+  }
+
+  if (!session) {
+    redirect("/signin");
   }
 
   return (
