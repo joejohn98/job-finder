@@ -114,6 +114,10 @@ const JobsPage = async ({
             </div>
           </div>
         ))}
+
+        {jobs.length === 0 && (
+          <p className="text-gray-600 text-center">No jobs found.</p>
+        )}
       </div>
     </div>
   );
