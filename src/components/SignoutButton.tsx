@@ -13,17 +13,24 @@ const SignOutButton = () => {
   const handleSignOut = async () => {
     try {
       setPending(true);
-      await signOut();
-      toast.success("Signed out successfully", {
-        description: "You have been signed out of your account",
-      });
-      router.push("/");
-      router.refresh();
+      const result = await signOut();
+      
+      if (result.success) {
+        toast.success("Signed out successfully", {
+          description: "You have been signed out of your account",
+        });
+        router.push("/");
+        router.refresh();
+      } else {
+        toast.error("Sign out failed", {
+          description: result.error || "There was an error signing you out. Please try again.",
+        });
+      }
     } catch (error) {
       toast.error("Sign out failed", {
-        description: "There was an error signing you out. Please try again.",
+        description: "An unexpected error occurred. Please try again.",
       });
-      console.error("Error signing out:", error);
+      console.error("Unexpected sign out error:", error);
     } finally {
       setPending(false);
     }

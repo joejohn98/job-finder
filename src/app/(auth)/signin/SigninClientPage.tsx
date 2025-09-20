@@ -24,30 +24,32 @@ const SigninClientPage = () => {
     try {
       const result = await signIn(email, password);
 
-      if (result.user) {
+      if (result.success && result.user) {
         toast.success("Successfully signed in!", {
           description: `Welcome back, ${result.user.name || email}!`,
         });
         router.push("/dashboard");
         router.refresh();
       } else {
-        const errorMessage = "Invalid email or password";
+        const errorMessage = result.error || "Sign in failed";
         setError(errorMessage);
         toast.error("Sign in failed", {
           description: errorMessage,
         });
       }
 
-      setEmail("");
-      setPassword("");
+      // Only clear form on success
+      if (result.success) {
+        setEmail("");
+        setPassword("");
+      }
     } catch (error) {
-      const errorMessage = `Authentication Error: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`;
+      const errorMessage = "An unexpected error occurred. Please try again.";
       setError(errorMessage);
       toast.error("Sign in failed", {
         description: errorMessage,
       });
+      console.error("Unexpected sign in error:", error);
     } finally {
       setIsLoading(false);
     }

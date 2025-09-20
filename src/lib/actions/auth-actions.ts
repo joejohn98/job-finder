@@ -2,43 +2,104 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { auth } from "../auth";
+import { auth, type User } from "../auth";
 
-export async function signIn(email: string, password: string) {
-  const result = await auth.api.signInEmail({
-    body: {
-      email,
-      password,
-    },
-  });
-  return result;
+type AuthResult = {
+  success: boolean;
+  user?: User;
+  error?: string;
+};
+
+export async function signIn(
+  email: string,
+  password: string
+): Promise<AuthResult> {
+  try {
+    const result = await auth.api.signInEmail({
+      body: {
+        email,
+        password,
+      },
+    });
+
+    if (result.user) {
+      return {
+        success: true,
+        user: result.user,
+      };
+    } else {
+      return {
+        success: false,
+        error: "Invalid email or password",
+      };
+    }
+  } catch (error) {
+    console.error("Sign in error:", error);
+    return {
+      success: false,
+      error: "Failed to sign in. Please try again.",
+    };
+  }
 }
 
-export async function signUp(email: string, password: string, name: string) {
-  const result = await auth.api.signUpEmail({
-    body: {
-      email,
-      password,
-      name,
-    },
-  });
-  return result;
+export async function signUp(
+  email: string,
+  password: string,
+  name: string
+): Promise<AuthResult> {
+  try {
+    const result = await auth.api.signUpEmail({
+      body: {
+        email,
+        password,
+        name,
+      },
+    });
+
+    if (result.user) {
+      return {
+        success: true,
+        user: result.user,
+      };
+    } else {
+      return {
+        success: false,
+        error: "Failed to create account",
+      };
+    }
+  } catch (error) {
+    console.error("Sign up error:", error);
+    return {
+      success: false,
+      error: "Failed to create account. Please try again.",
+    };
+  }
 }
 
 export async function signInSocial(provider: "google" | "github") {
-  const { url } = await auth.api.signInSocial({
-    body: {
-      provider,
-    },
-  });
-  if (url) {
-    redirect(url);
+  try {
+    const { url } = await auth.api.signInSocial({
+      body: {
+        provider,
+      },
+    });
+    if (url) {
+      redirect(url);
+    }
+  } catch (error) {
+    console.error(`Social sign in error for ${provider}:`, error);
+    throw new Error(`Failed to authenticate with ${provider}`);
   }
 }
 
 export async function signOut() {
-  const result = await auth.api.signOut({
-    headers: await headers(),
-  });
-  return result;
+  try {
+    await auth.api.signOut({
+      headers: await headers(),
+    });
+    return { success: true };
+  } catch (error) {
+    console.error("Sign out error:", error);
+    return { success: false, error: "Failed to sign out" };
+  }
 }

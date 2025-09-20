@@ -40,34 +40,37 @@ const SignupClientPage = () => {
 
       const result = await signUp(email, password, fullName);
 
-      if (result.user) {
+      if (result.success && result.user) {
         toast.success("Account created successfully!", {
           description: `Welcome to Job Finder, ${fullName}!`,
         });
         router.push("/dashboard");
         router.refresh();
       } else {
-        const errorMessage = "Failed to create account. Please try again.";
+        const errorMessage = result.error || "Failed to create account";
         setError(errorMessage);
         toast.error("Sign up failed", {
           description: errorMessage,
         });
       }
 
-      setFormData({
-        email: "",
-        password: "",
-        confirmPassword: "",
-        fullName: "",
-      });
+      // Only clear form on success
+      if (result.success) {
+        setFormData({
+          email: "",
+          password: "",
+          confirmPassword: "",
+          fullName: "",
+        });
+      }
     } catch (error) {
-      const errorMessage = `Authentication Error: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`;
+      // This should rarely happen now since server action handles errors
+      const errorMessage = "An unexpected error occurred. Please try again.";
       setError(errorMessage);
       toast.error("Sign up failed", {
         description: errorMessage,
       });
+      console.error("Unexpected sign up error:", error);
     } finally {
       setIsLoading(false);
     }
