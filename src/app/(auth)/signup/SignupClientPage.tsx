@@ -64,7 +64,6 @@ const SignupClientPage = () => {
         });
       }
     } catch (error) {
-      // This should rarely happen now since server action handles errors
       const errorMessage = "An unexpected error occurred. Please try again.";
       setError(errorMessage);
       toast.error("Sign up failed", {
