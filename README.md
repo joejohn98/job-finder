@@ -384,7 +384,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Built with ❤️ using Next.js 15, React 19, and modern web technologies**
 
-[🔗 Live Demo](https://your-demo-url.com) • [📚 Documentation](https://your-docs-url.com) • [🐛 Report Bug](https://github.com/your-repo/issues) • [✨ Request Feature](https://github.com/your-repo/issues/new?template=feature_request.md)
+[🔗 Live Demo](https://jobfinderjf.vercel.app/jobs) • [📚 Documentation](https://your-docs-url.com) • [🐛 Report Bug](https://github.com/your-repo/issues) • [✨ Request Feature](https://github.com/your-repo/issues/new?template=feature_request.md)
 
 **🌟 If this project helped you, please give it a star! 🌟**
 
