@@ -37,7 +37,7 @@ export async function signIn(
     console.error("Sign in error:", error);
     return {
       success: false,
-      error: "Failed to sign in. Please try again.",
+      error: "Invalid email or password.",
     };
   }
 }
