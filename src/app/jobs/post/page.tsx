@@ -153,7 +153,7 @@ const PostJobsPage = () => {
             type="text"
             name="salary"
             id="salary"
-            placeholder="e.g., ₹8,00,000 - ₹10,00,000 per year"
+            placeholder="e.g., ₹8,00,000 - ₹10,00,000 per annum"
             className="mt-1 block w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900"
           />
         </div>
