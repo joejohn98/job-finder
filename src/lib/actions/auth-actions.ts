@@ -1,7 +1,6 @@
 "use server";
 
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+import { headers } from "next/headers"
 import { auth, type User } from "../auth";
 
 type AuthResult = {
@@ -78,18 +77,25 @@ export async function signUp(
 
 export async function signInSocial(provider: "google" | "github") {
   try {
-    const { url } = await auth.api.signInSocial({
-      body: {
+    const {url} = await auth.api.signInSocial({
+      body:{
         provider,
       },
-    });
-    if (url) {
-      redirect(url);
+    })
+    if(url) {
+      return {
+        success: true,
+        url
+      }
     }
   } catch (error) {
-    console.error(`Social sign in error for ${provider}:`, error);
-    throw new Error(`Failed to authenticate with ${provider}`);
+    console.error(`Social sign in error for ${provider}:`, error)
+    return {
+      success: "fail", 
+      error: `failed to authenticate with ${provider}`
+    }
   }
+
 }
 
 export async function signOut() {

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import {useRouter} from "next/navigation"
 import { signInSocial } from "@/lib/actions/auth-actions";
 
 interface SocialAuthButtonsProps {
@@ -17,6 +18,8 @@ const SocialAuthButtons = ({
 }: SocialAuthButtonsProps) => {
   const [localLoading, setLocalLoading] = useState<boolean>(false);
 
+  const router = useRouter()
+
   const handleSocialAuth = async (provider: "google" | "github") => {
     const setLoading = (loading: boolean) => {
       setLocalLoading(loading);
@@ -26,10 +29,14 @@ const SocialAuthButtons = ({
     setLoading(true);
 
     try {
+      
+      const result = await signInSocial(provider);
+      if(result?.success && result?.url) {
+        router.push(result?.url)
+      }
       toast.loading(`Redirecting to ${provider}...`, {
         description: "Please wait while we redirect you to sign in",
       });
-      await signInSocial(provider);
     } catch (error) {
       const errorMessage = `Error authenticating with ${provider}: ${
         error instanceof Error ? error.message : "Unknown Error"
